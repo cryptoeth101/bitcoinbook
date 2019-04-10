@@ -19,55 +19,75 @@
 키는 개인 (비밀)키와 공개키 한 쌍으로 구성된다. 공개키는 은행 계좌번호와 유사하고 비밀키는 계좌를 관리할 수 있는 비밀 PIN 또는 수표의 서명과 유사하다고 생각하면 된다. 비트코인의 사용자들은 이러한 비밀키를 거의 볼 수 없다. 대부분의 경우 비밀키는 지갑 파일 내에 저장되고 비트코인 지갑 소프트웨어에 의해 관리된다.
 
 // In the payment portion of a bitcoin transaction, the recipient's public key is represented by its digital fingerprint, called a _bitcoin address_, which is used in the same way as the beneficiary name on a check (i.e., "Pay to the order of"). In most cases, a bitcoin address is generated from and corresponds to a public key. However, not all bitcoin addresses represent public keys; they can also represent other beneficiaries such as scripts, as we will see later in this chapter. This way, bitcoin addresses abstract the recipient of funds, making transaction destinations flexible, similar to paper checks: a single payment instrument that can be used to pay into people's accounts, pay into company accounts, pay for bills, or pay to cash. The bitcoin address is the only representation of the keys that users will routinely see, because this is the part they need to share with the world.
+비트코인 거래의 지불 부분에 있어서 비트코인 수신인의 공개키는 _비트코인 주소_ 라고불리는 디지털 지문으로 표현되며, 이것은 수표에 수취인의 이름을 적는 것 (즉, "~에게 지불합니다")과 유사한 방식이라고 생각하면 된다. 대부분의 경우 비트코인 주소는 공개키로부터 생성되고 공개키에 대응한다. 하지만 모든 비트코인 주소가 공개키를 표현하는 것은 아니다; 스크립트 등이 공개키 역학을 하기도 하며, 이후에 이 내용에 대해 다룰 것이다. 이러한 방식을 통해 비트코인 주소는 수표와 유사하게, 돈의 수취와 관련된 정보를 요약함으로써 송금처를 자유롭게 지정할 수 있다: 개인 계좌나 기업 계좌, 청구서에 대한 지불이나 현금 거래에 사용되는 단일 지급 수단으로 사용가능하다. 비트코인 주소는 사용자들이 일상적으로 보게 될 키를 대신하는 유일한 수단이며, 이는 타인과 공유해야 하는 부분이기 때문이다.
 
-First, we will introduce cryptography and explain the mathematics used in bitcoin. Next, we will look at how keys are generated, stored, and managed.  We will review the various encoding formats used to represent private and public keys, addresses, and script addresses. Finally, we will look at advanced use of keys and addresses: vanity, multisignature, and script addresses and paper wallets.
+// First, we will introduce cryptography and explain the mathematics used in bitcoin. Next, we will look at how keys are generated, stored, and managed.  We will review the various encoding formats used to represent private and public keys, addresses, and script addresses. Finally, we will look at advanced use of keys and addresses: vanity, multisignature, and script addresses and paper wallets.
+먼저 암호학과 비트코인에 사용되는 수학에 대해 다룰 것이다. 다음으로 키의 생성, 저장 및 관리에 대해 알아볼 것이다. 프라이빗 및 공개키, 주소와 스크립트 주소를 대신하기 위해 사용되는 다양한 인코딩 형식에 대해 살펴볼 것이다. 마지막으로 주소 꾸미기 (vanity), 다중서명 (multisignature) 및 스크립트 주소와 종이 지갑 등 키와 주소의 특별한 용도에 대해 다룰 것이다.
 
-==== Public Key Cryptography and Cryptocurrency
+// ==== Public Key Cryptography and Cryptocurrency
+==== 공개키 암호화 및 암호화폐
 
-((("keys and addresses", "overview of", "public key cryptography")))((("digital currencies", "cryptocurrency")))Public key cryptography was invented in the 1970s and is a mathematical foundation for computer and information security.
+// ((("keys and addresses", "overview of", "public key cryptography")))((("digital currencies", "cryptocurrency")))Public key cryptography was invented in the 1970s and is a mathematical foundation for computer and information security.
+((("keys and addresses", "overview of", "public key cryptography")))((("digital currencies", "cryptocurrency")))공개키 암호화는 1970년대에 발명되었고 컴퓨터와 정보 보안의 수학적 토대이다.
 
-Since the invention of public key cryptography, several suitable mathematical functions, such as prime number exponentiation and elliptic curve multiplication, have been discovered. These mathematical functions are practically irreversible, meaning that they are easy to calculate in one direction and infeasible to calculate in the opposite direction. Based on these mathematical functions, cryptography enables the creation of digital secrets and unforgeable digital signatures. Bitcoin uses elliptic curve multiplication as the basis for its cryptography.
+// Since the invention of public key cryptography, several suitable mathematical functions, such as prime number exponentiation and elliptic curve multiplication, have been discovered. These mathematical functions are practically irreversible, meaning that they are easy to calculate in one direction and infeasible to calculate in the opposite direction. Based on these mathematical functions, cryptography enables the creation of digital secrets and unforgeable digital signatures. Bitcoin uses elliptic curve multiplication as the basis for its cryptography.
+공개키 암호화 발명이후로, 소수 지수 함수 및 타원곡선 곱셈과 같은 몇 가지 적합한 수학함수가 발견되었다. 이 수학 함수들은 실제로는 불가역성이다. 즉, 한 방향으로 계산하는 것은 쉽지만 그것을 역으로 계산하는 것은 불가능하다. 이러한 수학 함수에 기반하여, 암호화는 디지털 비밀번호와 위조 불가능한 디지털 서명을 생성할 수 있다. 비트코인은 암호화의 기본 토대로 타원곡선 곱셈을 사용한다.
 
-In bitcoin, we use public key cryptography to create a key pair that controls access to bitcoin. The key pair consists of a private key and--derived from it--a unique public key. The public key is used to receive funds, and the private key is used to sign transactions to spend the funds.
+// In bitcoin, we use public key cryptography to create a key pair that controls access to bitcoin. The key pair consists of a private key and--derived from it--a unique public key. The public key is used to receive funds, and the private key is used to sign transactions to spend the funds.
+비트코인에서는 비트코인에 접근하는 권한을 주는 한 쌍의 키를 생성하기 위해 공개키 암호화를 활용한다. 한 쌍의 키는 프라이빗키와--프라이빗키에서 파생된--고유의 공개키로 구성된다. 공개키는 비트코인을 전송받을 때 사용되며, 프라이빗키는 비트코인을 소비하기 위해 트랜잭션에 서명할 때 사용된다.
 
-There is a mathematical relationship between the public and the private key that allows the private key to be used to generate signatures on messages. This signature can be validated against the public key without revealing the private key.
+// There is a mathematical relationship between the public and the private key that allows the private key to be used to generate signatures on messages. This signature can be validated against the public key without revealing the private key.
+공개키와 프라이빗 간에는 수학적인 관계가 성립하며, 이 때문에 개인키를 메시지에 서명할 때 사용할 수 있다. 이 서명은 프라이빗키를 노출하지 않고 공개키만으로 유효성을 확인하는 것이 가능하다.
 
-When spending bitcoin, the current bitcoin owner presents her public key and a signature (different each time, but created from the same private key) in a transaction to spend those bitcoin. Through the presentation of the public key and signature, everyone in the bitcoin network can verify and accept the transaction as valid, confirming that the person transferring the bitcoin owned them at the time of the transfer.
+// When spending bitcoin, the current bitcoin owner presents her public key and a signature (different each time, but created from the same private key) in a transaction to spend those bitcoin. Through the presentation of the public key and signature, everyone in the bitcoin network can verify and accept the transaction as valid, confirming that the person transferring the bitcoin owned them at the time of the transfer.
+비트코인을 소비할 때, 현재 비트코인 소유자가 비트코인을 소비하기 위해 트랜잭션에서 공개키와 서명 (매번 다르지만 동일한 프라이빗키로 부터 생성됨)을 제시한다. 공개키와 서명을 제시함으로써, 비트코인 네트워크의 모든 사람이 트랜잭션을 유효한 거래로 검증하고 받아들일 수 있게된다. 동시에 비트코인을 전송하려는 사람이 전송 당시에 비트코인을 보유하고 있었는지 여부도 확인가능하다.
 
 [TIP]
 ====
-((("keys and addresses", "overview of", "key pairs")))In most wallet implementations, the private and public keys are stored together as a _key pair_ for convenience. However, the public key can be calculated from the private key, so storing only the private key is also possible.
+// ((("keys and addresses", "overview of", "key pairs")))In most wallet implementations, the private and public keys are stored together as a _key pair_ for convenience. However, the public key can be calculated from the private key, so storing only the private key is also possible.
+((("keys and addresses", "overview of", "key pairs")))대부분의 지갑 구현에서, 프라이빗키와 공개키는 편의성을 위해 _한 쌍의 키 (key pair)_ 형태로 저장된다. 그러나 공개키는 개인키를 기반으로 계산할 수 있기 때문에 프라이빗키만 저장하는 것도 가능하다.
 ====
 
 [[private_public_keys]]
-==== Private and Public Keys
+// ==== Private and Public Keys
+==== 프라이빗키 및 공개키
 
-((("keys and addresses", "overview of", "private and public key pairs")))((("elliptic curve cryptography")))((("cryptography", "elliptic curve cryptography")))A bitcoin wallet contains a collection of key pairs, each consisting of a private key and a public key. The private key (k) is a number, usually picked at random. From the private key, we use elliptic curve multiplication, a one-way cryptographic function, to generate a public key (K). From the public key (K), we use a one-way cryptographic hash function to generate a bitcoin address (A). In this section, we will start with generating the private key, look at the elliptic curve math that is used to turn that into a public key, and finally, generate a bitcoin address from the public key. The relationship between private key, public key, and bitcoin address is shown in <<k_to_K_to_A>>.
+// ((("keys and addresses", "overview of", "private and public key pairs")))((("elliptic curve cryptography")))((("cryptography", "elliptic curve cryptography")))A bitcoin wallet contains a collection of key pairs, each consisting of a private key and a public key. The private key (k) is a number, usually picked at random. From the private key, we use elliptic curve multiplication, a one-way cryptographic function, to generate a public key (K). From the public key (K), we use a one-way cryptographic hash function to generate a bitcoin address (A). In this section, we will start with generating the private key, look at the elliptic curve math that is used to turn that into a public key, and finally, generate a bitcoin address from the public key. The relationship between private key, public key, and bitcoin address is shown in <<k_to_K_to_A>>.
+((("keys and addresses", "overview of", "private and public key pairs")))((("elliptic curve cryptography")))((("cryptography", "elliptic curve cryptography")))비트코인 지갑은 프라이빗키와 공개키로 구성된 각각의 키 쌍을 포함한다. 프라이빗키 (k)는 일반적으로 무작위로 추출된 숫자이다. 프라이빗키로부터 일방향 타원곡선 곱셈을 사용하여 공개키 (K)를 생성한다. 공개키 (K)로부터 일방향 암호화 해시함수를 사용하여 비트코인 주소 (A)를 생성할 수 있다. 이제부터 우리는 프라이빗키를 생성하는 것을 시작으로 공개키로 전환하는데 사용하는 타원곡선 함수를 살펴보고, 마지막으로 공개키로부터 비트코인 주소를 생성할 것이다. 프라이빗키, 공개키와 비트코인 주소에 대한 관계는 <<k_to_K_to_A>>에 설명되어 있다.
 
 [[k_to_K_to_A]]
-.Private key, public key, and bitcoin address
+// .Private key, public key, and bitcoin address
+.프라이빗키, 공개키 및 비트코인 주소
 image::images/mbc2_0401.png["privk_to_pubK_to_addressA"]
 
-.Why Use Asymmetric Cryptography (Public/Private Keys)?
+// .Why Use Asymmetric Cryptography (Public/Private Keys)?
+.왜 비대칭 암호화를 사용하는가 (공개키/프라이빗키)?
 ****
-((("cryptography", "asymmetric")))((("digital signatures", "asymmetric cryptography and")))((("asymmetric cryptography")))Why is asymmetric cryptography used in bitcoin? It's not used to "encrypt" (make secret) the transactions. Rather, the useful property of asymmetric cryptography is the ability to generate _digital signatures_. A private key can be applied to the digital fingerprint of a transaction to produce a numerical signature. This signature can only be produced by someone with knowledge of the private key. However, anyone with access to the public key and the transaction fingerprint can use them to _verify_ the signature. This useful property of asymmetric cryptography makes it possible for anyone to verify every signature on every transaction, while ensuring that only the owners of private keys can produce valid signatures.
+// ((("cryptography", "asymmetric")))((("digital signatures", "asymmetric cryptography and")))((("asymmetric cryptography")))Why is asymmetric cryptography used in bitcoin? It's not used to "encrypt" (make secret) the transactions. Rather, the useful property of asymmetric cryptography is the ability to generate _digital signatures_. A private key can be applied to the digital fingerprint of a transaction to produce a numerical signature. This signature can only be produced by someone with knowledge of the private key. However, anyone with access to the public key and the transaction fingerprint can use them to _verify_ the signature. This useful property of asymmetric cryptography makes it possible for anyone to verify every signature on every transaction, while ensuring that only the owners of private keys can produce valid signatures.
+((("cryptography", "asymmetric")))((("digital signatures", "asymmetric cryptography and")))((("asymmetric cryptography")))왜 비트코인에서 비대칭 암호화를 사용하는가? 트랜잭션을 "암호화 (encrypt)" (비밀 유지) 하기 위해 사용되는 것은 아니다. 오히려 비대칭 암호화의 유용한 특징은 _디지털 서명_ 을 생성하는 능력이다. 프라이빗키는 숫자로 된 서명을 생성하여 트랜잭션의 디지털 지문으로 사용될 수 있다. 이러한 서명은 프라이빗키에 대한 정보를 가지고 있는 사람만 생성할 수 있다. 그러나 공개키와 트랜잭션 지문에 접근 할 수 있는 모든 사람은 이것을 서명을 _검증하기 위해_ 사용할 수 있다. 이러한 비대칭 암호화의 특징은 누구나 각각 트랜잭션의 서명을 검증할 수 있게 하면서, 프라이빗키 소유자만이 유효한 서명을 생성할 수 있게 한다.
 ****
 
 [[private_keys]]
-==== Private Keys
+// ==== Private Keys
+==== 프라이빗키
 
-((("keys and addresses", "overview of", "private key generation")))((("warnings and cautions", "private key protection")))A private key is simply a number, picked at random. Ownership and control over the private key is the root of user control over all funds associated with the corresponding bitcoin address. The private key is used to create signatures that are required to spend bitcoin by proving ownership of funds used in a transaction. The private key must remain secret at all times, because revealing it to third parties is equivalent to giving them control over the bitcoin secured by that key. The private key must also be backed up and protected from accidental loss, because if it's lost it cannot be recovered and the funds secured by it are forever lost, too.
+// ((("keys and addresses", "overview of", "private key generation")))((("warnings and cautions", "private key protection")))A private key is simply a number, picked at random. Ownership and control over the private key is the root of user control over all funds associated with the corresponding bitcoin address. The private key is used to create signatures that are required to spend bitcoin by proving ownership of funds used in a transaction. The private key must remain secret at all times, because revealing it to third parties is equivalent to giving them control over the bitcoin secured by that key. The private key must also be backed up and protected from accidental loss, because if it's lost it cannot be recovered and the funds secured by it are forever lost, too.
+((("keys and addresses", "overview of", "private key generation")))((("warnings and cautions", "private key protection")))프라이빗키는 무작위로 선정된 숫자이다. 프라이빗키에 대한 소유권과 제어는 해당하는 비트코인 주소와 연관된 모든 자금에 대한 사용자 제어의 핵심이다. 프라이빗키는 서명을 생성하기 위해 사용된다. 이 서명은 트랜잭션에 사용되는 자금의 소유권을 증명하므로 비트코인을 소비할 때 요구된다. 프라이빗키를 공개하는 것은 프라이빗키로 보안된 비트코인에 대한 통제권을 넘겨주는 것과 동일하기 때문에 절대 공개되어서는 안된다. 또한 프라이빗키를 분실하면 복원할 수 없고 해당 프라이빗키로 보안된 자금도 영구적으로 손실되므로 프라이빗키는 항상 백업되어야 한다.
 
 [TIP]
 ====
-The bitcoin private key is just a number. You can pick your private keys randomly using just a coin, pencil, and paper: toss a coin 256 times and you have the binary digits of a random private key you can use in a bitcoin wallet. The public key can then be generated from the private key.
+// The bitcoin private key is just a number. You can pick your private keys randomly using just a coin, pencil, and paper: toss a coin 256 times and you have the binary digits of a random private key you can use in a bitcoin wallet. The public key can then be generated from the private key.
+비트코인 프라이빗키는 단순한 숫자이다. 여러분은 단지 동전이나 연필, 종이를 가지고 무작위로 프라이빗키를 고를 수 있다: 동전을 256회 던져서 비트코인 지갑에서 사용할 수 있는 무작위 개인키를 구성하는 2진수를 결정하는 식이다. 그 후 공개키는 프라이빗키로부터 생성된다.
 ====
 
-===== Generating a private key from a random number
+// ===== Generating a private key from a random number
+=====난수로부터 프라이빗키 생성하기
 
-The first and most important step in generating keys is to find a secure source of entropy, or randomness. Creating a bitcoin key is essentially the same as "Pick a number between 1 and 2^256^." The exact method you use to pick that number does not matter as long as it is not predictable or repeatable. Bitcoin software uses the underlying operating system's random number generators to produce 256 bits of entropy (randomness). Usually, the OS random number generator is initialized by a human source of randomness, which is why you may be asked to wiggle your mouse around for a few seconds.
+// The first and most important step in generating keys is to find a secure source of entropy, or randomness. Creating a bitcoin key is essentially the same as "Pick a number between 1 and 2^256^." The exact method you use to pick that number does not matter as long as it is not predictable or repeatable. Bitcoin software uses the underlying operating system's random number generators to produce 256 bits of entropy (randomness). Usually, the OS random number generator is initialized by a human source of randomness, which is why you may be asked to wiggle your mouse around for a few seconds.
+키를 생성하는데 있어서 가장 첫 단계이자 중요한 과정은 엔트로피의 안전한 출처, 또는 무작위성을 찾는 것이다. 비트코인 키를 생성하는 것은 본질적으로 "1에서 2^256^ 사이의 숫자를 선택하는 것"과 동일하다. 선택한 숫자가 예측 또는 재현 가능하지 않다면 숫자 선택시 정확히 어떤 방법을 사용했는지는 중요하지 않다. 비트코인 소프트웨어는 256비트의 엔트로피 (무작위성)을 생성하기 위해 기본적인 운영체제의 난수생성기를 이용한다. 일반적으로 OS의 난수생성기는 사람이 직접 무작위성을 만들어내므로, 몇 초 동안 마우스를 이리저리 움직여야 될 수도 있다.
 
-More precisely, the private key can be any number between +0+ and +n - 1+ inclusive, where n is a constant (n = 1.1578 * 10^77^, slightly less than 2^256^) defined as the order of the elliptic curve used in bitcoin (see <<elliptic_curve>>). To create such a key, we randomly pick a 256-bit number and check that it is less than +n+. In programming terms, this is usually achieved by feeding a larger string of random bits, collected from a cryptographically secure source of randomness, into the SHA256 hash algorithm, which will conveniently produce a 256-bit number. If the result is less than +n+, we have a suitable private key. Otherwise, we simply try again with another random number.
+// More precisely, the private key can be any number between +0+ and +n - 1+ inclusive, where n is a constant (n = 1.1578 * 10^77^, slightly less than 2^256^) defined as the order of the elliptic curve used in bitcoin (see <<elliptic_curve>>). To create such a key, we randomly pick a 256-bit number and check that it is less than +n+. In programming terms, this is usually achieved by feeding a larger string of random bits, collected from a cryptographically secure source of randomness, into the SHA256 hash algorithm, which will conveniently produce a 256-bit number. If the result is less than +n+, we have a suitable private key. Otherwise, we simply try again with another random number.
+더 정확하게 설명하자면, 프라이빗 키는 +0+ 와 +n - 1+ 사이의 숫자로 구성될 수 있다. n (n = 1.1578 * 10^77^, 2^256^ 보다 약간 작은 값)은 비트코인에 사용된 타원곡선의 위수 (order)라고 정의된 상수이다 (<<elliptic_curve>> 를 참고하라). 이 키를 생성하기 위해서, 무작위로 256비트의 숫자를 선택하고 이 숫자가 +n+ 보다 작은지 확인한다. 프로그래밍 측면에서 보면, 암호학적으로 안전한 무작위로부터 추출된 무작위 비트 문자열 중에서 크기가 큰 것들을 SHA256 해시 알고리즘에 집어넣으면 편리하게 256-비트 숫자를 생성할 수 있다. 결과값이 +n+보다 작다면, 알맞은 개인키가 생성된 것이다. 그렇지 않으면, 단순히 다른 난수를 사용하여 다시 시도해보면 된다.
 
 [WARNING]
 ====
