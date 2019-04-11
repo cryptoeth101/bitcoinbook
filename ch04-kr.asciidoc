@@ -256,7 +256,8 @@ P~1~ 이 "무한원점" 이라면, P~1~ + P~2~ = P~2~ 가 된다. 유사하게 P
 // ==== Generating a Public Key
 ==== 공개키 생성하기
 
-((("keys and addresses", "overview of", "public key generation")))((("generator point")))Starting with a private key in the form of a randomly generated number _k_, we multiply it by a predetermined point on the curve called the _generator point_ _G_ to produce another point somewhere else on the curve, which is the corresponding public key _K_. The generator point is specified as part of the +secp256k1+ standard and is always the same for all keys in bitcoin:
+// ((("keys and addresses", "overview of", "public key generation")))((("generator point")))Starting with a private key in the form of a randomly generated number _k_, we multiply it by a predetermined point on the curve called the _generator point_ _G_ to produce another point somewhere else on the curve, which is the corresponding public key _K_. The generator point is specified as part of the +secp256k1+ standard and is always the same for all keys in bitcoin:
+((("keys and addresses", "overview of", "public key generation")))((("generator point")))무작위로 생성된 숫자 _k_ 로 이루어진 프라이빗키를 출발점으로 하여, _k_ 에 _생성 포인트_ _G_ 를 곱하여 곡선상의 다른 곳에 위치한 다른 점을 생성할 수 있다. 이 점이 공개키인 _K_ 가 된다. 생성 포인트는 +secp256k1+ 표준의 일부로 명시되어 있고 비드코인의 모든 키에 대해 동일한 값을 가진다:
 
 [latexmath]
 ++++
@@ -265,20 +266,24 @@ P~1~ 이 "무한원점" 이라면, P~1~ + P~2~ = P~2~ 가 된다. 유사하게 P
 \end{equation}
 ++++
 
-where _k_ is the private key, _G_ is the generator point, and _K_ is the resulting public key, a point on the curve. Because the generator point is always the same for all bitcoin users, a private key _k_ multiplied with _G_ will always result in the same public key _K_. The relationship between _k_ and _K_ is fixed, but can only be calculated in one direction, from _k_ to _K_. That's why a bitcoin address (derived from _K_) can be shared with anyone and does not reveal the user's private key (_k_).
+// where _k_ is the private key, _G_ is the generator point, and _K_ is the resulting public key, a point on the curve. Because the generator point is always the same for all bitcoin users, a private key _k_ multiplied with _G_ will always result in the same public key _K_. The relationship between _k_ and _K_ is fixed, but can only be calculated in one direction, from _k_ to _K_. That's why a bitcoin address (derived from _K_) can be shared with anyone and does not reveal the user's private key (_k_).
+_k_ 는 프라이빗키, _G_ 는 생성 포인트, _K_ 는 곡선 위의 한 점으로 생성된 공개키이다. 모든 비트코인 사용자에 대해 생성 포인트는 항상 동일하므로, 프라이빗키 _k_ 에 _G_ 를 곱하게 되면, 항상 동일한 공개키 _K_ 가 나올 것이다. _k_ 와 _K_ 값의 관계는 고정되어 있지만, _k_ 에서 _K_ 로 한 방향으로의 계산만 가능하다. 그래서 비트코인 주소 (_K_ 값에서 파생)는 누구와도 공유할 수 있지만 사용자의 프라이빗키 (_k_)는 공개해서는 안된다.
 
 [TIP]
 ====
-A private key can be converted into a public key, but a public key cannot be converted back into a private key because the math only works one way.
+// A private key can be converted into a public key, but a public key cannot be converted back into a private key because the math only works one way.
+프라이빗키는 공개키로 전환될 수 있지만, 단방향 연산만 가능하므로 공개키를 프라이빗키로 다시 전환할 수는 없다.
 ====
 
-Implementing the elliptic curve multiplication, we take the private key _k_ generated previously and multiply it with the generator point G to find the public key _K_:
+// Implementing the elliptic curve multiplication, we take the private key _k_ generated previously and multiply it with the generator point G to find the public key _K_:
+타원곡선 곱셈 함수를 구현하기 위해서는 이전에 계산되어 나온 프라이빗키 _k_ 에 생성 포인트 G 값을 곱하여 공개키 _k_ 를 구하면 된다.
 
 ----
 K = 1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD * G
 ----
 
-Public key _K_ is defined as a point +K = (x,y)+:
+// Public key _K_ is defined as a point +K = (x,y)+:
+공개키 _K_ 는 한 점 +K = (x,y)+ 로 정의된다.
 
 ----
 K = (x, y)
@@ -289,17 +294,21 @@ x = F028892BAD7ED57D2FB57BF33081D5CFCF6F9ED3D3D7F159C2E2FFF579DC341A
 y = 07CF33DA18BD734C600B96A72BBC4749D5141C90EC8AC328AE52DDFE2E505BDB
 ----
 
-To visualize multiplication of a point with an integer, we will use the simpler elliptic curve over real numbers&#x2014;remember, the math is the same. Our goal is to find the multiple _kG_ of the generator point _G_, which is the same as adding _G_ to itself, _k_ times in a row. In elliptic curves, adding a point to itself is the equivalent of drawing a tangent line on the point and finding where it intersects the curve again, then reflecting that point on the x-axis.
+// To visualize multiplication of a point with an integer, we will use the simpler elliptic curve over real numbers&#x2014;remember, the math is the same. Our goal is to find the multiple _kG_ of the generator point _G_, which is the same as adding _G_ to itself, _k_ times in a row. In elliptic curves, adding a point to itself is the equivalent of drawing a tangent line on the point and finding where it intersects the curve again, then reflecting that point on the x-axis.
+정수 좌표인 한 점의 곱셈을 시각화하기 위해 실수 체계에서 사용하는 더 간단한 타원곡선을 사용하게 될 것이다: 동일한 수학이 사용됨을 명심하라. 우리의 목적은 생성포인트 _G_ 의 배수 _kG_ 를 찾는 것이며, 이는 _G_ 를 연속하여 _k_ 번 더하는 것과 동일하다. 타원곡선에서 한 점을 연속하여 더하는 것은 그 점에서 접선을 그리는 것과 동일하고, 곡선과의 교차점을 찾은 후 x축에 대칭시킨다.
 
-<<ecc_illustrated>> shows the process for deriving _G_, _2G_, _4G_, as a geometric operation on the curve.
+// <<ecc_illustrated>> shows the process for deriving _G_, _2G_, _4G_, as a geometric operation on the curve.
+<<ecc_illustrated>> 는 곡선상에서 기하학적 방법을 통해 _G_, _2G_, _4G_ 를 구하는 과정이다.
 
 [TIP]
 ====
-((("OpenSSL cryptographic library")))Most bitcoin implementations use the http://bit.ly/1ql7bn8[OpenSSL cryptographic library] to do the elliptic curve math. For example, to derive the public key, the function +EC_POINT_mul()+ is used.((("", startref="KAover04")))
+// ((("OpenSSL cryptographic library")))Most bitcoin implementations use the http://bit.ly/1ql7bn8[OpenSSL cryptographic library] to do the elliptic curve math. For example, to derive the public key, the function +EC_POINT_mul()+ is used.((("", startref="KAover04")))
+((("OpenSSL cryptographic library")))대부분의 비트코인 구현들은 타원곡선 계산을 위해 http://bit.ly/1ql7bn8[OpenSSL cryptographic library] 를 사용한다. 예를 들어, 공개키를 얻기 위해서는 +EC_POINT_mul()+ 함수를 이용한다.((("", startref="KAover04")))
 ====
 
 [[ecc_illustrated]]
-.Elliptic curve cryptography: visualizing the multiplication of a point G by an integer k on an elliptic curve
+// .Elliptic curve cryptography: visualizing the multiplication of a point G by an integer k on an elliptic curve
+.타원곡선 암호법: 곡선상의 점 G와 정수 k의 곱을 시각화
 image::images/mbc2_0404.png["ecc_illustrated"]
 
 === Bitcoin Addresses
