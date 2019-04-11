@@ -81,20 +81,22 @@ image::images/mbc2_0401.png["privk_to_pubK_to_addressA"]
 ====
 
 // ===== Generating a private key from a random number
-=====난수로부터 프라이빗키 생성하기
+===== 난수로부터 프라이빗키 생성하기
 
 // The first and most important step in generating keys is to find a secure source of entropy, or randomness. Creating a bitcoin key is essentially the same as "Pick a number between 1 and 2^256^." The exact method you use to pick that number does not matter as long as it is not predictable or repeatable. Bitcoin software uses the underlying operating system's random number generators to produce 256 bits of entropy (randomness). Usually, the OS random number generator is initialized by a human source of randomness, which is why you may be asked to wiggle your mouse around for a few seconds.
 키를 생성하는데 있어서 가장 첫 단계이자 중요한 과정은 엔트로피의 안전한 출처, 또는 무작위성을 찾는 것이다. 비트코인 키를 생성하는 것은 본질적으로 "1에서 2^256^ 사이의 숫자를 선택하는 것"과 동일하다. 선택한 숫자가 예측 또는 재현 가능하지 않다면 숫자 선택시 정확히 어떤 방법을 사용했는지는 중요하지 않다. 비트코인 소프트웨어는 256비트의 엔트로피 (무작위성)을 생성하기 위해 기본적인 운영체제의 난수생성기를 이용한다. 일반적으로 OS의 난수생성기는 사람이 직접 무작위성을 만들어내므로, 몇 초 동안 마우스를 이리저리 움직여야 될 수도 있다.
 
 // More precisely, the private key can be any number between +0+ and +n - 1+ inclusive, where n is a constant (n = 1.1578 * 10^77^, slightly less than 2^256^) defined as the order of the elliptic curve used in bitcoin (see <<elliptic_curve>>). To create such a key, we randomly pick a 256-bit number and check that it is less than +n+. In programming terms, this is usually achieved by feeding a larger string of random bits, collected from a cryptographically secure source of randomness, into the SHA256 hash algorithm, which will conveniently produce a 256-bit number. If the result is less than +n+, we have a suitable private key. Otherwise, we simply try again with another random number.
-더 정확하게 설명하자면, 프라이빗 키는 +0+ 와 +n - 1+ 사이의 숫자로 구성될 수 있다. n (n = 1.1578 * 10^77^, 2^256^ 보다 약간 작은 값)은 비트코인에 사용된 타원곡선의 위수 (order)라고 정의된 상수이다 (<<elliptic_curve>> 를 참고하라). 이 키를 생성하기 위해서, 무작위로 256비트의 숫자를 선택하고 이 숫자가 +n+ 보다 작은지 확인한다. 프로그래밍 측면에서 보면, 암호학적으로 안전한 무작위로부터 추출된 무작위 비트 문자열 중에서 크기가 큰 것들을 SHA256 해시 알고리즘에 집어넣으면 편리하게 256-비트 숫자를 생성할 수 있다. 결과값이 +n+보다 작다면, 알맞은 개인키가 생성된 것이다. 그렇지 않으면, 단순히 다른 난수를 사용하여 다시 시도해보면 된다.
+더 정확하게 설명하자면, 프라이빗 키는 +0+ 와 +n - 1+ 사이의 숫자로 구성될 수 있다. n (n = 1.1578 * 10^77^, 2^256^ 보다 약간 작은 값)은 비트코인에 사용된 타원곡선의 위수 (order)라고 정의된 상수이다 (<<elliptic_curve>> 를 참고하라). 이 키를 생성하기 위해서, 무작위로 256비트의 숫자를 선택하고 이 숫자가 +n+ 보다 작은지 확인한다. 프로그래밍 측면에서 보면, 암호학적으로 안전한 무작위로부터 추출된 무작위 비트 문자열 중에서 크기가 큰 것들을 SHA256 해시 알고리즘에 집어넣으면 편리하게 256-비트 숫자를 생성할 수 있다. 결과값이 +n+ 보다 작다면, 알맞은 개인키가 생성된 것이다. 그렇지 않으면, 단순히 다른 난수를 사용하여 다시 시도해보면 된다.
 
 [WARNING]
 ====
-((("random numbers", "random number generation")))((("entropy", "random number generation")))Do not write your own code to create a random number or use a "simple" random number generator offered by your programming language. Use a cryptographically secure pseudorandom number generator (CSPRNG) with a seed from a source of sufficient entropy. Study the documentation of the random number generator library you choose to make sure it is cryptographically secure. Correct implementation of the CSPRNG is critical to the security of the keys.
+// ((("random numbers", "random number generation")))((("entropy", "random number generation")))Do not write your own code to create a random number or use a "simple" random number generator offered by your programming language. Use a cryptographically secure pseudorandom number generator (CSPRNG) with a seed from a source of sufficient entropy. Study the documentation of the random number generator library you choose to make sure it is cryptographically secure. Correct implementation of the CSPRNG is critical to the security of the keys.
+((("random numbers", "random number generation")))((("entropy", "random number generation")))난수를 만들기 위해 자체 코드를 쓰거나 프로그래밍 언어게 제공하는 "단순한" 난수생성기를 사용해서는 안된다. 충분한 엔트로피를 가지고 있는 소스로부터 얻은 시드 (seed)를 이용해서 암호학적으로 안전한 유사난수생성기 (CSPRNG)를 사용하라. 당신이 선택한 난수생성기가 암호학적으로 안전한지 확인하기 위해 난수생성기 라이브러리에 대한 자료를 연구해야 한다. 키의 보안성에 있어 올바른 CSPRNG를 구현하는 것은 중요하다.
 ====
 
-The following is a randomly generated private key (k) shown in hexadecimal format (256 bits shown as 64 hexadecimal digits, each 4 bits):
+// The following is a randomly generated private key (k) shown in hexadecimal format (256 bits shown as 64 hexadecimal digits, each 4 bits):
+다음은 16진법 형식으로 표시한 (각 4비트씩, 64개의 16진수로 표현된 256비트) 무작위로 생성된 프라이빗키 (k)이다.
 
 ----
 1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD
@@ -103,10 +105,12 @@ The following is a randomly generated private key (k) shown in hexadecimal forma
 
 [TIP]
 ====
-The size of bitcoin's private key space, (2^256^) is an unfathomably large number. It is approximately 10^77^ in decimal. For comparison, the visible universe is estimated to contain 10^80^ atoms.
+// The size of bitcoin's private key space, (2^256^) is an unfathomably large number. It is approximately 10^77^ in decimal. For comparison, the visible universe is estimated to contain 10^80^ atoms.
+비트코인 프라이빗키 공간 크기 (2^256^)는 대단히 큰 숫자이다. 10진법으로 표현하면 대략 10^77^ 정도이다. 비교를 위해서 참고로 가시적인 우주는 10^80^ 개의 원자로 구성되어 있다고 추정된다.
 ====
 
-((("dumpprivkey command")))To generate a new key with the Bitcoin Core client (see <<ch03_bitcoin_client>>), use the +getnewaddress+ command. For security reasons it displays the public key only, not the private key. To ask +bitcoind+ to expose the private key, use the +dumpprivkey+ command. The +dumpprivkey+ command shows the private key in a Base58 checksum-encoded format called the _Wallet Import Format_ (WIF), which we will examine in more detail in <<priv_formats>>. Here's an example of generating and displaying a private key using these two commands:
+// ((("dumpprivkey command")))To generate a new key with the Bitcoin Core client (see <<ch03_bitcoin_client>>), use the +getnewaddress+ command. For security reasons it displays the public key only, not the private key. To ask +bitcoind+ to expose the private key, use the +dumpprivkey+ command. The +dumpprivkey+ command shows the private key in a Base58 checksum-encoded format called the _Wallet Import Format_ (WIF), which we will examine in more detail in <<priv_formats>>. Here's an example of generating and displaying a private key using these two commands:
+((("dumpprivkey command")))비트코인 코어 클라이언트를 사용하여 새로운 키를 생성하려면 (<<ch03_bitcoin_client>> 를 참조하라), +getnewaddress+ 명령어를 사용하라.보안상의 이유로 공개키만 표시되고 프라이빗키는 표시되지 않는다. +bitcoind+ 에 개인키를 표시하도록 하려면, +dumpprivkey+ 명령어를 사용하라. +dumpprivkey+ 명령어는 _Wallet Import Format_ (WIF)인 Base58 체크섬으로 인코딩된 (checksum-encoded) 포맷으로 개인키를 표시한다. 이에 대해서는 <<priv_formats>> 에서 더 자세하게 살펴볼 것이다. 다음은 이 두가지 명령어를 사용하여 프라이빗키를 생성하고 표시하는 예이다.
 
 ----
 $ bitcoin-cli getnewaddress
@@ -115,15 +119,18 @@ $ bitcoin-cli dumpprivkey 1J7mdg5rbQyUHENYdx39WVWK7fsLpEoXZy
 KxFC1jmwwCoACiCAWZ3eXa96mBM6tb3TYzGmf6YwgdGWZgawvrtJ
 ----
 
-The +dumpprivkey+ command opens the wallet and extracts the private key that was generated by the +getnewaddress+ command. It is not possible for +bitcoind+ to know the private key from the public key unless they are both stored in the wallet.
+// The +dumpprivkey+ command opens the wallet and extracts the private key that was generated by the +getnewaddress+ command. It is not possible for +bitcoind+ to know the private key from the public key unless they are both stored in the wallet.
++dumpprivkey+ 명령어는 지갑을 열고 +getnewaddress+ 명령어로 생성된 프라이빗키를 추출한다. 프라이빗키와 공개키가 지갑에 둘다 저장되어 있지 않은 경우에는 +bitcoind+ 에서 공개키로부터 프라이빗키를 알아내는 것은 불가능하다.
 
 [TIP]
 =====================================================================
-The +dumpprivkey+ command does not generate a private key from a public key, as this is impossible. The command simply reveals the private key that is already known to the wallet and which was generated by the +getnewaddress+ command.
+// The +dumpprivkey+ command does not generate a private key from a public key, as this is impossible. The command simply reveals the private key that is already known to the wallet and which was generated by the +getnewaddress+ command.
++dumpprivkey+ 명령어는 공개키로부터 프라이빗키를 생성하는 것이 불가능하는 작업이 불가능하기 때문에 프라이빗키를 생성하지 않는다. 이 명령어는 단순히 이미 지갑에 있고 +getnewaddress+ 명령어를 통해 생성된 프라이빗키만을 보여준다.
 =====================================================================
 
 [role="pagebreak-before"]
-You can also use the Bitcoin Explorer command-line tool (see <<appdx_bx>>) to generate and display private keys with the commands +seed+, +ec-new+, and +ec-to-wif+:
+// You can also use the Bitcoin Explorer command-line tool (see <<appdx_bx>>) to generate and display private keys with the commands +seed+, +ec-new+, and +ec-to-wif+:
+또한 여러분은 비트코인 익스플로러 명령어 라인 도구 (command-line tool) (<<appdx_bx>> 참고)를 사용하여, +seed+, +ec-new+ 및 +ec-to-wif+ 명령어를 사용하여 프라이빗키를 생성하고 표시할 수 있다:
 
 ----
 $ bx seed | bx ec-new | bx ec-to-wif
@@ -131,28 +138,36 @@ $ bx seed | bx ec-new | bx ec-to-wif
 ----
 
 [[pubkey]]
-==== Public Keys
+// ==== Public Keys
+==== 공개키
 
-((("keys and addresses", "overview of", "public key calculation")))((("generator point")))The public key is calculated from the private key using elliptic curve multiplication, which is irreversible: _K_ = _k_ * _G_, where _k_ is the private key, _G_ is a constant point called the _generator point_, and _K_ is the resulting public key. The reverse operation, known as "finding the discrete logarithm"—calculating _k_ if you know __K__—is as difficult as trying all possible values of _k_, i.e., a brute-force search. Before we demonstrate how to generate a public key from a private key, let's look at elliptic curve cryptography in a bit more detail.
+// ((("keys and addresses", "overview of", "public key calculation")))((("generator point")))The public key is calculated from the private key using elliptic curve multiplication, which is irreversible: _K_ = _k_ * _G_, where _k_ is the private key, _G_ is a constant point called the _generator point_, and _K_ is the resulting public key. The reverse operation, known as "finding the discrete logarithm"—calculating _k_ if you know __K__—is as difficult as trying all possible values of _k_, i.e., a brute-force search. Before we demonstrate how to generate a public key from a private key, let's look at elliptic curve cryptography in a bit more detail.
+((("keys and addresses", "overview of", "public key calculation")))((("generator point")))공개키는 타원곡선 곱셈함수를 이용해서 프라이빗키로부터 계산되며, 이 과정은 비가역적이다: _K_ = _k_ * _G_ 이 식에서  _k_ 는 프라이빗키, _G_ 는 _생성 포인트 (generator point)_ 라고 하는 상수이며, _K_ 는 계산 결과로 나온 공개키이다. "이산로그 (discrete logarithm) 찾기"로도 알려진 역연산은 _K_ 값을 안다는 가정 하에 _k_ 값을 계산하는 과정인데, 가능한 _k_ 값을 모두 대입해보는 것만큼 어렵다 (즉, 무차별 대입공격). 프라이빗키로부터 공개키를 어떻게 생성하는가를 설명하기 전에, 타원곡선 암호법에 대해 더 자세히 살펴보자.
 
 [TIP]
 ====
-Elliptic curve multiplication is a type of function that cryptographers call a "trap door" function: it is easy to do in one direction (multiplication) and impossible to do in the reverse direction (division). The owner of the private key can easily create the public key and then share it with the world knowing that no one can reverse the function and calculate the private key from the public key. This mathematical trick becomes the basis for unforgeable and secure digital signatures that prove ownership of bitcoin funds.
+// Elliptic curve multiplication is a type of function that cryptographers call a "trap door" function: it is easy to do in one direction (multiplication) and impossible to do in the reverse direction (division). The owner of the private key can easily create the public key and then share it with the world knowing that no one can reverse the function and calculate the private key from the public key. This mathematical trick becomes the basis for unforgeable and secure digital signatures that prove ownership of bitcoin funds.
+타원곡선 곱셈함수는 암호학자들이 "트랩 도어 (trap door)" 이라고 하는 함수 유형 중 하나이다: 단방향 (곱셈)의 연산은 쉽지만, 역연산 (나누기)은 불가능하다. 프라이빗키 소유자는 누군가 함수를 역연산하거나 공개키로부터 프라이빗키를 계산하는 것은 불가능하다는 것을 알고 있기 때문에, 쉽게 공개키를 생성하고 공유할 수 있다. 이 수학적 방법은 비트코인의 소유권을 증명하는 위조불가능하고 안전한 디지털 서명의 기초가 된다.
 ====
 
 [[elliptic_curve]]
-==== Elliptic Curve Cryptography Explained
+// ==== Elliptic Curve Cryptography Explained
+==== 타원곡선 암호법 설명
 
-((("keys and addresses", "overview of", "elliptic curve cryptography")))((("elliptic curve cryptography", id="eliptic04")))((("cryptography", "elliptic curve cryptography", id="Celliptic04")))Elliptic curve cryptography is a type of asymmetric or public key cryptography based on the discrete logarithm problem as expressed by addition and multiplication on the points of an elliptic curve.
+// ((("keys and addresses", "overview of", "elliptic curve cryptography")))((("elliptic curve cryptography", id="eliptic04")))((("cryptography", "elliptic curve cryptography", id="Celliptic04")))Elliptic curve cryptography is a type of asymmetric or public key cryptography based on the discrete logarithm problem as expressed by addition and multiplication on the points of an elliptic curve.
+((("keys and addresses", "overview of", "elliptic curve cryptography")))((("elliptic curve cryptography", id="eliptic04")))((("cryptography", "elliptic curve cryptography", id="Celliptic04")))타원곡선 암호법은 비대칭 또는 공개키 암호법의 일종이다. 이 암호법은 이산로그 문제를 기반으로 하며 타원곡선 위의 점에서 덧셈이나 곱셈으로 표시된다.
 
-<<ecc-curve>> is an example of an elliptic curve, similar to that used by bitcoin.
+// <<ecc-curve>> is an example of an elliptic curve, similar to that used by bitcoin.
+<<ecc-curve>> 는 타원곡선의 한 예로, 바트코인에서 사용되는 것과 유사하다.
 
 [[ecc-curve]]
 [role="smallerthirty"]
-.An elliptic curve
+// .An elliptic curve
+.타원곡선
 image::images/mbc2_0402.png["ecc-curve"]
 
-Bitcoin uses a specific elliptic curve and set of mathematical constants, as defined in a standard called +secp256k1+, established by the National Institute of Standards and Technology (NIST). The +secp256k1+ curve is defined by the following function, which produces an elliptic curve:
+// Bitcoin uses a specific elliptic curve and set of mathematical constants, as defined in a standard called +secp256k1+, established by the National Institute of Standards and Technology (NIST). The +secp256k1+ curve is defined by the following function, which produces an elliptic curve:
+비트코인은 미국립표준기술원 (NIST)에서 개발된 +secp256k1+ 표준에 정의된 대로 특정 타원곡선과 수학 상수 집합을 사용한다. +secp256k1+ 곡선은 타원곡선을 생성하는 다음의 함수로 정의된다.
 
 [latexmath]
 ++++
@@ -161,7 +176,8 @@ Bitcoin uses a specific elliptic curve and set of mathematical constants, as def
 \end{equation}
 ++++
 
-or
+// or
+또는
 
 [latexmath]
 ++++
@@ -170,25 +186,31 @@ or
 \end{equation}
 ++++
 
-The _mod p_ (modulo prime number p) indicates that this curve is over a finite field of prime order _p_, also written as latexmath:[\( \mathbb{F}_p \)], where p = 2^256^ – 2^32^ – 2^9^ – 2^8^ – 2^7^ – 2^6^ – 2^4^ – 1, a very large prime number.
+// The _mod p_ (modulo prime number p) indicates that this curve is over a finite field of prime order _p_, also written as latexmath:[\( \mathbb{F}_p \)], where p = 2^256^ – 2^32^ – 2^9^ – 2^8^ – 2^7^ – 2^6^ – 2^4^ – 1, a very large prime number.
+_mod p_ (modulo 소수 p)는 위 곡선이 소수위수 (prime order) _p_ 의 유한체 체제에 존재한다는 사실을 나타내며, latexmath:[\( \mathbb{F}_p \)] 로 표기되기도 한다. 여기에서 p = 2^256^ – 2^32^ – 2^9^ – 2^8^ – 2^7^ – 2^6^ – 2^4^ – 1 로 매우 큰 소수이다.
 
-Because this curve is defined over a finite field of prime order instead of over the real numbers, it looks like a pattern of dots scattered in two dimensions, which makes it difficult to visualize. However, the math is identical to that of an elliptic curve over real numbers. As an example, <<ecc-over-F17-math>> shows the same elliptic curve over a much smaller finite field of prime order 17, showing a pattern of dots on a grid. The +secp256k1+ bitcoin elliptic curve can be thought of as a much more complex pattern of dots on a unfathomably large grid.
+// Because this curve is defined over a finite field of prime order instead of over the real numbers, it looks like a pattern of dots scattered in two dimensions, which makes it difficult to visualize. However, the math is identical to that of an elliptic curve over real numbers. As an example, <<ecc-over-F17-math>> shows the same elliptic curve over a much smaller finite field of prime order 17, showing a pattern of dots on a grid. The +secp256k1+ bitcoin elliptic curve can be thought of as a much more complex pattern of dots on a unfathomably large grid.
+이 곡선이 실수 체제가 아닌 소수위수의 유한체 체제에서 정의되기 때문에, 2차원 그래프에 분포되어 있는 점들의 패턴이라 시각화하기가 어렵다. 그러나 사용되는 수학바식은 실수 체제의 곡선과 동일하다. 예를 들어, <<ecc-over-F17-math>> 는 소수위수가 17인 소규모 유한체에서 동일한 곡선을 나타내며, 격자 그래프 상의 점 패턴을 보여준다. +secp256k1+ 비트코인 타원곡선은 대단히 큰 격자그래프 위에 훨씬 더 복잡한 유형의 점 패턴이라고 생각하면 된다.
 
 [[ecc-over-F17-math]]
 [role="smallersixty"]
-.Elliptic curve cryptography: visualizing an elliptic curve over F(p), with p=17
+// .Elliptic curve cryptography: visualizing an elliptic curve over F(p), with p=17
+.타원곡선 암호법: p=17인 경우 F(p)에 대한 타원곡선의 시각화
 image::images/mbc2_0403.png["ecc-over-F17-math"]
 
-So, for example, the following is a point P with coordinates (x,y) that is a point on the +secp256k1+ curve:
+// So, for example, the following is a point P with coordinates (x,y) that is a point on the +secp256k1+ curve:
+아래의 예시는 +secp256k1+ 위의 한 점 (x,y)로 이루어진 포인트 P이다.
 
 ----
 P = (55066263022277343669578718895168534326250603453777594175500187360389116729240, 32670510020758816978083085130507043184471273380659243275938904335757337482424)
 ----
 
-<<example_4_1>> shows how you can check this yourself using Python:
+// <<example_4_1>> shows how you can check this yourself using Python:
+<<example_4_1>> 에서는 파이썬을 사용하여 확인할 수 있는 방법을 보여준다.
 
 [[example_4_1]]
-.Using Python to confirm that this point is on the elliptic curve
+// .Using Python to confirm that this point is on the elliptic curve
+.파이썬을 사용하여 타원곡선 위의 점인지 확인하기
 ====
 [source, pycon]
 ----
@@ -203,26 +225,36 @@ Type "help", "copyright", "credits" or "license" for more information.
 ----
 ====
 
-In elliptic curve math, there is a point called the "point at infinity," which roughly corresponds to the role of zero in addition. On computers, it's sometimes represented by x = y = 0 (which doesn't satisfy the elliptic curve equation, but it's an easy separate case that can be checked).
+// In elliptic curve math, there is a point called the "point at infinity," which roughly corresponds to the role of zero in addition. On computers, it's sometimes represented by x = y = 0 (which doesn't satisfy the elliptic curve equation, but it's an easy separate case that can be checked).
+타원곡선 수학에서는 "무한원점 (point at infinity)"라는 점이 있는데, 이 점은 0의 역할을 한다고 생각하면 된다. 컴퓨터상에서는 x=y=0 으로 가끔 표현되기도 한다 (타원곡선 방정식을 만족하지는 않지만 쉽게 확인할 수 있는 별개의 방법이다).
 
-There is also a pass:[+] operator, called "addition," which has some properties similar to the traditional addition of real numbers that gradeschool children learn. Given two points P~1~ and P~2~ on the elliptic curve, there is a third point P~3~ = P~1~ + P~2~, also on the elliptic curve.
+// There is also a pass:[+] operator, called "addition," which has some properties similar to the traditional addition of real numbers that gradeschool children learn. Given two points P~1~ and P~2~ on the elliptic curve, there is a third point P~3~ = P~1~ + P~2~, also on the elliptic curve.
+또한 "덧셈 (addition)"이라고 하는 [+] 연산자도 있으며, 이것은 초등학교에서 배우는 실수의 일반적인 덧셈이 가지는 특성과 유사하다. 타원곡선 위의 두 점 P~1~ 와 P~2~ 가 주어졌을 때, 타원곡선 위에는 세 번째 점 P~3~ = P~1~ + P~2~ 도 존재한다.
 
-Geometrically, this third point P~3~ is calculated by drawing a line between P~1~ and P~2~. This line will intersect the elliptic curve in exactly one additional place. Call this point P~3~' = (x, y). Then reflect in the x-axis to get P~3~ = (x, –y).
+// Geometrically, this third point P~3~ is calculated by drawing a line between P~1~ and P~2~. This line will intersect the elliptic curve in exactly one additional place. Call this point P~3~' = (x, y). Then reflect in the x-axis to get P~3~ = (x, –y).
+기하학적으로 세 번째 점 P~3~ 은 P~1~ 와 P~2~ 사이에 직선을 그어서 계산한다. 이 선은 정확히 P~1~ 와 P~2~ 가 아닌 또 다른 한 점에서 곡선과 교차하게 된다. 이 점을 P~3~' = (x, y) 라 하자. 그 후 x축에 대칭시키면 P~3~ = (x, –y) 를 얻을 수 있다.
 
-There are a couple of special cases that explain the need for the "point at infinity."
+// There are a couple of special cases that explain the need for the "point at infinity."
+"무한원점"의 개념이 필요한 경우도 몇 가지 존재한다.
 
-If P~1~ and P~2~ are the same point, the line "between" P~1~ and P~2~ should extend to be the tangent on the curve at this point P~1~. This tangent will intersect the curve in exactly one new point. You can use techniques from calculus to determine the slope of the tangent line. These techniques curiously work, even though we are restricting our interest to points on the curve with two integer coordinates!
+// If P~1~ and P~2~ are the same point, the line "between" P~1~ and P~2~ should extend to be the tangent on the curve at this point P~1~. This tangent will intersect the curve in exactly one new point. You can use techniques from calculus to determine the slope of the tangent line. These techniques curiously work, even though we are restricting our interest to points on the curve with two integer coordinates!
+P~1~ 와 P~2~ 가 동일한 점일때, P~1~ 와 P~2~ "사이에" 존재하는 직선은 P~1~ 위 곡선의 접선으로 연장된다. 이 접선은 곡선의 다른 한 점과 만나게 된다. 미적분을 사용하여 접선의 기울기를 구할 수 있다. 두 개의 정수로 구성된 곡선 상의 점에만 집중하고 있지만, 이 방법은 신기하게도 제 역할을 한다.
 
-In some cases (i.e., if P~1~ and P~2~ have the same x values but different y values), the tangent line will be exactly vertical, in which case P3 = "point at infinity."
+// In some cases (i.e., if P~1~ and P~2~ have the same x values but different y values), the tangent line will be exactly vertical, in which case P3 = "point at infinity."
+어떤 경우 (P~1~ and P~2~ 가 동일한 x값을 가지지만 y값은 다를 때)에는 접선은 정확히 수직이 되며, 이 경우 P3 = "무한원점" 이다.
 
-If P~1~ is the "point at infinity," then P~1~ + P~2~ = P~2~. Similarly, if P~2~ is the point at infinity, then P~1~ + P~2~ = P~1~. This shows how the point at infinity plays the role of zero.
+// If P~1~ is the "point at infinity," then P~1~ + P~2~ = P~2~. Similarly, if P~2~ is the point at infinity, then P~1~ + P~2~ = P~1~. This shows how the point at infinity plays the role of zero.
+P~1~ 이 "무한원점" 이라면, P~1~ + P~2~ = P~2~ 가 된다. 유사하게 P~2~ 이 무한원점이라면, P~1~ + P~2~ = P~1~ 이 된다. 이 경우가 무한원점이 0의 역할을 어떻게 수행하는지를 잘 보여준다.
 
-It turns out that pass:[+] is associative, which means that (A pass:[+] B) pass:[+] C = A pass:[+] (B pass:[+] C). That means we can write A pass:[+] B pass:[+] C without parentheses and without ambiguity.
+// It turns out that pass:[+] is associative, which means that (A pass:[+] B) pass:[+] C = A pass:[+] (B pass:[+] C). That means we can write A pass:[+] B pass:[+] C without parentheses and without ambiguity.
+[+] 는 결합성 (associative)을 가지고 있다. 이는 (A pass:[+] B) pass:[+] C = A pass:[+] (B pass:[+] C) 를 의미한다. 즉, 괄호없이 A A pass:[+] B pass:[+] C 라고 쓰더라도 전혀 모호하지 않다.
 
-Now that we have defined addition, we can define multiplication in the standard way that extends addition. For a point P on the elliptic curve, if k is a whole number, then kP = P + P + P + ... + P (k times). Note that k is sometimes confusingly called an "exponent" in this case.((("", startref="eliptic04")))((("", startref="Celliptic04")))
+// Now that we have defined addition, we can define multiplication in the standard way that extends addition. For a point P on the elliptic curve, if k is a whole number, then kP = P + P + P + ... + P (k times). Note that k is sometimes confusingly called an "exponent" in this case.((("", startref="eliptic04")))((("", startref="Celliptic04")))
+덧셈에 대해서 살펴보았고, 우리는 이제 덧셈까지 포괄할 수 있는 표준 방법으로 곱셈을 정의할 수 있다. 타원곡선 위의 점 P에 대해 k가 정수인 경우, kP = P + P + P + ... + P (k 배) 이다. 이 경우 때때로 k를 "지수 (exponent)"라고 불러서 혼동할 수 있으니 주의하자.
 
 [[public_key_derivation]]
-==== Generating a Public Key
+// ==== Generating a Public Key
+==== 공개키 생성하기
 
 ((("keys and addresses", "overview of", "public key generation")))((("generator point")))Starting with a private key in the form of a randomly generated number _k_, we multiply it by a predetermined point on the curve called the _generator point_ _G_ to produce another point somewhere else on the curve, which is the corresponding public key _K_. The generator point is specified as part of the +secp256k1+ standard and is always the same for all keys in bitcoin:
 
