@@ -311,20 +311,25 @@ y = 07CF33DA18BD734C600B96A72BBC4749D5141C90EC8AC328AE52DDFE2E505BDB
 .타원곡선 암호법: 곡선상의 점 G와 정수 k의 곱을 시각화
 image::images/mbc2_0404.png["ecc_illustrated"]
 
-=== Bitcoin Addresses
+// === Bitcoin Addresses
+=== 비트코인 주소
 
-((("keys and addresses", "bitcoin addresses", id="KAaddress04")))A bitcoin address is a string of digits and characters that can be shared with anyone who wants to send you money. Addresses produced from public keys consist of a string of numbers and letters, beginning with the digit "1." Here's an example of a bitcoin address:
+// ((("keys and addresses", "bitcoin addresses", id="KAaddress04")))A bitcoin address is a string of digits and characters that can be shared with anyone who wants to send you money. Addresses produced from public keys consist of a string of numbers and letters, beginning with the digit "1." Here's an example of a bitcoin address:
+((("keys and addresses", "bitcoin addresses", id="KAaddress04")))비트코인 주소는 숫자와 문자로 구성된 문자열로 당신에게 돈을 전송하고자 하는 어떤 누구와도 공유할 수 있다. 공개키로부터 생성된 주소는 숫자와 문자로 구성되며, 숫자 '1'로 시작한다. 다음은 비트코인 주소의 한 예이다.
 
 ----
 1J7mdg5rbQyUHENYdx39WVWK7fsLpEoXZy
 ----
 
 
-The bitcoin address is what appears most commonly in a transaction as the "recipient" of the funds. If we compare a bitcoin transaction to a paper check, the bitcoin address is the beneficiary, which is what we write on the line after "Pay to the order of." On a paper check, that beneficiary can sometimes be the name of a bank account holder, but can also include corporations, institutions, or even cash. Because paper checks do not need to specify an account, but rather use an abstract name as the recipient of funds, they are very flexible payment instruments. Bitcoin transactions use a similar abstraction, the bitcoin address, to make them very flexible. A bitcoin address can represent the owner of a private/public key pair, or it can represent something else, such as a payment script, as we will see in <<p2sh>>. For now, let's examine the simple case, a bitcoin address that represents, and is derived from, a public key.
+// The bitcoin address is what appears most commonly in a transaction as the "recipient" of the funds. If we compare a bitcoin transaction to a paper check, the bitcoin address is the beneficiary, which is what we write on the line after "Pay to the order of." On a paper check, that beneficiary can sometimes be the name of a bank account holder, but can also include corporations, institutions, or even cash. Because paper checks do not need to specify an account, but rather use an abstract name as the recipient of funds, they are very flexible payment instruments. Bitcoin transactions use a similar abstraction, the bitcoin address, to make them very flexible. A bitcoin address can represent the owner of a private/public key pair, or it can represent something else, such as a payment script, as we will see in <<p2sh>>. For now, let's examine the simple case, a bitcoin address that represents, and is derived from, a public key.
+비트코인 주소는 자금의 '수신자' 자격으로 거래에서 가장 흔하게 볼 수 있는 유형이다. 수표와 비트코인 트랜잭션을 비교하자면, 비트코인 주소는 수령인을 뜻하고 "~에게 지불"이라고 적혀있는 문구에서 공란에 적는 부분이라고 생각하면 이해하기 쉽다. 수표에서는 수령인이 은행 계좌 보유자이거나 기업, 기관, 심지어는 현금 자체가 될 수 있다. 수표는 계좌를 명시할 필요가 없고 수령처를 추상적으로 써도 되기 때문에 매우 유연한 지불수단이다. 비트코인 트랜잭션은 이와 유사하게 추상적인 비트코인 주소를 사용하기 때문에 매우 유연한 지불수단이다. 비트코인 주소는 프라이빗/공개키 쌍의 소유주를 나타내거나, <<p2sh>> 에서 보게 될 지불 스크립트와 같은 다른 대상을 나타낼 수도 있다. 지금부터는 쉬운 개념인, 공개키를 표현하는 수단이자 공개키에서 생성된 결과물인 비트코인 주소에 대해서 살펴보도록 하자.
 
-((("addresses", "algorithms used to create")))The bitcoin address is derived from the public key through the use of one-way cryptographic hashing. A "hashing algorithm" or simply "hash algorithm" is a one-way function that produces a fingerprint or "hash" of an arbitrary-sized input. Cryptographic hash functions are used extensively in bitcoin: in bitcoin addresses, in script addresses, and in the mining Proof-of-Work algorithm. The algorithms used to make a bitcoin address from a public key are the Secure Hash Algorithm (SHA) and the RACE Integrity Primitives Evaluation Message Digest (RIPEMD), specifically SHA256 and RIPEMD160.
+// ((("addresses", "algorithms used to create")))The bitcoin address is derived from the public key through the use of one-way cryptographic hashing. A "hashing algorithm" or simply "hash algorithm" is a one-way function that produces a fingerprint or "hash" of an arbitrary-sized input. Cryptographic hash functions are used extensively in bitcoin: in bitcoin addresses, in script addresses, and in the mining Proof-of-Work algorithm. The algorithms used to make a bitcoin address from a public key are the Secure Hash Algorithm (SHA) and the RACE Integrity Primitives Evaluation Message Digest (RIPEMD), specifically SHA256 and RIPEMD160.
+((("addresses", "algorithms used to create")))비트코인 주소는 단방향 암호화 해싱을 사용하여 공개키를 생성한다. "해싱 알고리즘" 또는 단순히 "해시 알고리즘"은 임의 크기의 입력값으로부터 지문 또는 "해시"값을 생성해 내는 단방향 함수이다. 암호화 해시 함수는 비트코인에서 광범위하게 사용된다: 비트코인 주소, 스크립트 주소 및 작업증명 알고리즘 채굴. 공개키로부터 비트코인 주소를 생성하는데 사용되는 알고리즘은 '보안 해시 알고리즘 (SHA)' 및 RACE Integrity Primitives Evaluation Message Digest (RIPEMD), 구체적으로는 SHA256과 RIPEMD160 이다.
 
-Starting with the public key _K_, we compute the SHA256 hash and then compute the RIPEMD160 hash of the result, producing a 160-bit (20-byte) number:
+// Starting with the public key _K_, we compute the SHA256 hash and then compute the RIPEMD160 hash of the result, producing a 160-bit (20-byte) number:
+공개키 _K_ 로부터 SHA256 해시를 산출하고 그 결과값의 RIPEMD160 해시를 산출하면 160 비트 (20 바이트)의 숫자가 생성된다:
 
 [latexmath]
 ++++
@@ -333,22 +338,27 @@ Starting with the public key _K_, we compute the SHA256 hash and then compute th
 \end{equation}
 ++++
 
-where _K_ is the public key and _A_ is the resulting bitcoin address.
+// where _K_ is the public key and _A_ is the resulting bitcoin address.
+여기서 _K_ 는 공개키이고 _A_ 는 생성된 비트코인 주소이다.
 
 
 [TIP]
 ====
-A bitcoin address is _not_ the same as a public key. Bitcoin addresses are derived from a public key using a one-way function.
+// A bitcoin address is _not_ the same as a public key. Bitcoin addresses are derived from a public key using a one-way function.
+비트코인 주소는 공개키와 동일하지 _않다_ . 비트코인 주소는 단방향 함수를 사용하여 공개키로부터 생성된다.
 ====
 
-Bitcoin addresses are almost always encoded as "Base58Check" (see <<base58>>), which uses 58 characters (a Base58 number system) and a checksum to help human readability, avoid ambiguity, and protect against errors in address transcription and entry. Base58Check is also used in many other ways in bitcoin, whenever there is a need for a user to read and correctly transcribe a number, such as a bitcoin address, a private key, an encrypted key, or a script hash. In the next section we will examine the mechanics of Base58Check encoding and decoding and the resulting representations. <<pubkey_to_address>> illustrates the conversion of a public key into a bitcoin address.
+// Bitcoin addresses are almost always encoded as "Base58Check" (see <<base58>>), which uses 58 characters (a Base58 number system) and a checksum to help human readability, avoid ambiguity, and protect against errors in address transcription and entry. Base58Check is also used in many other ways in bitcoin, whenever there is a need for a user to read and correctly transcribe a number, such as a bitcoin address, a private key, an encrypted key, or a script hash. In the next section we will examine the mechanics of Base58Check encoding and decoding and the resulting representations. <<pubkey_to_address>> illustrates the conversion of a public key into a bitcoin address.
+비트코인 주소는 거의 항상 "Base58Check"로 인코딩 되며 (<<base58>> 참고), Base58Check는 58개의 문자 (Base58 숫자체계)와 체크섬을 이용해서 가독성을 높이고 모호함을 방지하며 주소 변환 및 입력 오류를 방지한다. 또한 Base58Check는 비트코인에서 여러 다양한 방법으로 활용되며, 비트코인 주소, 프라이빗키, 암호화된 키, 스크립트 해시 등을 사용자가 읽고 정확하게 숫자를 입력할 수 있게 해준다. 이제 Base58Check 인코딩 및 디코딩 메커니즘과 그에 따른 표현법에 대해 알아보도록 하자. <<pubkey_to_address>> 는 공개키를 비트코인 주소로 변환하는 과정이 도식화되어 있다.
 
 [[pubkey_to_address]]
-.Public key to bitcoin address: conversion of a public key into a bitcoin address
+// .Public key to bitcoin address: conversion of a public key into a bitcoin address
+공개키에서 비트코인 주소까지: 공개키가 비트코인 주소가 되는 과정
 image::images/mbc2_0405.png["pubkey_to_address"]
 
 [[base58]]
-==== Base58 and Base58Check Encoding
+// ==== Base58 and Base58Check Encoding
+==== Base58 및 Base58Check 인코딩
 
 ((("keys and addresses", "bitcoin addresses", "Base58 and Base58check encoding")))((("Base58 and Base58check encoding", id="base5804")))((("addresses", "Base58 and Base58check encoding", id="Abase5804")))In order to represent long numbers in a compact way, using fewer symbols, many computer systems use mixed-alphanumeric representations with a base (or radix) higher than 10. For example, whereas the traditional decimal system uses the 10 numerals 0 through 9, the hexadecimal system uses 16, with the letters A through F as the six additional symbols. A number represented in hexadecimal format is shorter than the equivalent decimal representation. Even more compact, Base64 representation uses 26 lowercase letters, 26 capital letters, 10 numerals, and 2 more characters such as &#x201c;`+`&#x201d; and "/" to transmit binary data over text-based media such as email. Base64 is most commonly used to add binary attachments to email. Base58 is a text-based binary-encoding format developed for use in bitcoin and used in many other cryptocurrencies. It offers a balance between compact representation, readability, and error detection and prevention. Base58 is a subset of Base64, using upper- and lowercase letters and numbers, but omitting some characters that are frequently mistaken for one another and can appear identical when displayed in certain fonts. Specifically, Base58 is Base64 without the 0 (number zero), O (capital o), l (lower L), I (capital i), and the symbols &#x201c;`+`&#x201d; and "/". Or, more simply, it is a set of lowercase and capital letters and numbers without the four (0, O, l, I) just mentioned. <<base58alphabet>> shows the full Base58 alphabet.
 
